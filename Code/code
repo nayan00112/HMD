@@ -1,0 +1,68 @@
+#include<LiquidCrystal_I2C.h>
+#include <Servo.h>
+
+LiquidCrystal_I2C n(0x27, 16, 2);
+Servo myservo;
+
+#define trig 13
+#define echo 12
+
+float c; // degree variable
+float r; //rad variable
+float h = 0; //hight
+float hc = 0; // correction in hight
+float dc = 6.80; // correction in distance
+void setup() {
+  // put your setup code here, to run once:
+n.init();
+pinMode(trig,OUTPUT);
+pinMode(echo, INPUT);
+
+pinMode(8, OUTPUT);  // hc-sr04 vcc
+pinMode(7, OUTPUT); // potentiometer vcc
+pinMode(2, OUTPUT); // lederlight gnd
+digitalWrite(8, HIGH); // hc-sr04 vcc
+digitalWrite(7, HIGH); // potentiometer vcc
+digitalWrite(2, LOW); // leserlight gnd
+pinMode(A0, INPUT); // potentiometer
+
+Serial.begin(9600);
+n.backlight();
+myservo.attach(9);
+n.setCursor(0,0);
+n.print("Nayan Patel");
+n.setCursor(0,1);
+n.print("EXPERT LIFE");
+delay(3000);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  float duration, distance;
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  duration = pulseIn(echo, HIGH);
+  distance = (duration/2) / 29.1;
+  
+  c = analogRead(A0);
+  c = map(c, 0, 1023, 0, 90);
+  
+  myservo.write(c);
+  r = c*(3.14/180);
+  n.clear();
+  n.setCursor(0,0);
+  n.print("Hight in cm :");
+  n.setCursor(0,1);
+  if (distance >= 300)
+    {
+       n.print("err");
+    }
+    else{
+      h = tan(r);
+      n.print((h*(distance+dc))+hc); //h=tanx*d
+      }
+      delay(100);
+}
