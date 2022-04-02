@@ -33,7 +33,7 @@ n.setCursor(0,0);
 n.print("Nayan Patel");
 n.setCursor(0,1);
 n.print("EXPERT LIFE");
-delay(3000);
+delay(3200);
 }
 
 void loop() {
